@@ -18,7 +18,8 @@
 %token <string_val> WORD
 
 // added tokens
-%token  PIPE GREATGREAT LESS AMP CD
+%token  PIPE GREATGREAT LESS AMP CD 
+%token <string_val> WILDCARD
 // 
 
 %token 	NOTOKEN GREAT NEWLINE 
@@ -101,6 +102,9 @@ argument:
 
 	       	Command::_currentSimpleCommand->insertArgument( $1 );\
 	}
+	| WILDCARD {
+		wildcard($1);
+	}
 	;
 
 command_word:
@@ -135,6 +139,13 @@ iomodifier_opt:
 	;
 
 %%
+
+void wildcard(char *s)
+{
+	printf("   Yacc: insert wildcard \"%s\"\n", s);
+	Command::_currentSimpleCommand->insertArgument(s);
+	Command::_currentSimpleCommand->wildcard();
+}
 
 void
 yyerror(const char * s)

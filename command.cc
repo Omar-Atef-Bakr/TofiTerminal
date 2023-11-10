@@ -33,6 +33,7 @@ SimpleCommand::SimpleCommand()
 	_numberOfArguments = 0;
 	_arguments = (char **) malloc( _numberOfAvailableArguments * sizeof( char * ) );
 	_pipe = false;
+	_wildcard = false;
 }
 
 void
@@ -56,9 +57,12 @@ SimpleCommand::insertArgument( char * argument )
 }
 
 // added functions
-void
-SimpleCommand::pipe(){
+void SimpleCommand::pipe(){
 	_pipe = true;
+}
+
+void SimpleCommand::wildcard(){
+	_wildcard = true;
 }
 // end of added functions
 
@@ -298,11 +302,25 @@ Command::execute()
 			close(defaulterr);
 
 			// execute
-			execvp(current->_arguments[0], current->_arguments);
+			if(current->_wildcard){
+				char* command;
+				command = (char*)malloc(100*sizeof(char));
 
-			// blow up if child doesn't suicide
-			perror("execvp");
-			exit(1);
+				strcpy(command, current->_arguments[0]);
+				for (int i = 1; i < current->_numberOfArguments; i++){
+					strcat(command, " ");
+					strcat(command, current->_arguments[i]);
+				}
+				system(command);
+				exit(0);
+			}
+			else{
+				execvp(current->_arguments[0], current->_arguments);
+				// blow up if child doesn't suicide
+				perror("execvp");
+				exit(1);
+			}
+
 		}
 		else if(pid < 0){
 			perror("fork");
@@ -353,9 +371,6 @@ Command::prompt()
 	fflush(stdout);
 }
 
-//
-
-//
 Command Command::_currentCommand;
 SimpleCommand * Command::_currentSimpleCommand;
 

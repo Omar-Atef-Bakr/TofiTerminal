@@ -13,10 +13,12 @@ struct SimpleCommand {
 
 	// added attributes
 	bool _pipe;
+	bool _wildcard;
 	//
 
 	// added methods
 	void pipe();
+	void wildcard();
 	// end of added functions
 
 	SimpleCommand();

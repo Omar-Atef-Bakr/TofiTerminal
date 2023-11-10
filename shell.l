@@ -29,7 +29,11 @@
 						exit(0);
 					}
 
-
+([a-zA-Z0-9./]*["*"]+[a-zA-Z0-9./]*)+ {
+						/* handle wildcarding */
+						yylval.string_val = strdup(yytext);
+						return WILDCARD;
+					}
 
 "cd"				{
 						return CD;
@@ -42,7 +46,6 @@
 ">" 				{
 						return GREAT;
 					}
-
 
 "<"					{
 						return LESS;
