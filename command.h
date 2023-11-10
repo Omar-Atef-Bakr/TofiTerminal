@@ -36,10 +36,6 @@ struct Command {
 	bool _append;
 	// end of added attributes
 
-	// added functions
-	void start_execution();
-	// end of added functions
-
 	void prompt();
 	void print();
 	void execute();

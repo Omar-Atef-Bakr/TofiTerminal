@@ -79,14 +79,6 @@ Command::Command()
 	_append = false;
 }
 
-// added functions
-void 
-Command::start_execution(){
-	for(int i=0; i<_numberOfSimpleCommands; i++){
-
-	}
-}
-// end of added functions
 
 void
 Command::insertSimpleCommand( SimpleCommand * simpleCommand )
@@ -201,11 +193,10 @@ Command::execute()
 
 	// Print contents of Command data structure
 	print();
-
 	// Add execution here
 	
 	// create pipe
-	int fdpipe[2];
+	int fdpipe[2]; // [5, 6]
 	if(pipe(fdpipe) == -1){
 		perror("pipe");
 		exit(2);
@@ -228,7 +219,6 @@ Command::execute()
         }
 
 		SimpleCommand *current = _simpleCommands[i];
-
 
         // handle input file
         if(_inputFile){
@@ -273,6 +263,7 @@ Command::execute()
             dup2(fd, 1);
             close(fd);
         }
+
         // if pipe is on, redirect stdout to pipe
         if(current->_pipe){
             if (DEBUG){
@@ -288,6 +279,7 @@ Command::execute()
             // close writing end of the pipe
             close(fdpipe[1]);
         }
+
         if(_errFile){
             int fd = open(_errFile, O_CREAT | O_WRONLY);
             dup2(fd, 2);
@@ -306,7 +298,7 @@ Command::execute()
 			close(defaulterr);
 
 			// execute
-			execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
+			execvp(current->_arguments[0], current->_arguments);
 
 			// blow up if child doesn't suicide
 			perror("execvp");
@@ -369,8 +361,6 @@ SimpleCommand * Command::_currentSimpleCommand;
 
 int yyparse(void);
 
-// handler for SIGCHLD signal
-
 
 int 
 main()
@@ -385,10 +375,6 @@ main()
     }
 	fprintf(logfile, "\nShell session started:\n");
     fclose(logfile);
-
-	// log children
-    // signal(SIGCHLD, sigchld_handler);
-
 
 	Command::_currentCommand.prompt();
 	yyparse();
